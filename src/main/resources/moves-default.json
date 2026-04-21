@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "positions": [
+    { "key": "standing", "label": "Standing" },
+    { "key": "clinch", "label": "Clinch" },
+    { "key": "closed_guard_bottom_A", "label": "Closed guard (A on bottom)" },
+    { "key": "open_guard_bottom_A", "label": "Open guard (A on bottom)" },
+    { "key": "half_guard_bottom_A", "label": "Half guard (A on bottom)" },
+    { "key": "mount_top_A", "label": "Mount (A on top)" },
+    { "key": "mount_bottom_A", "label": "Mount (A on bottom)" },
+    { "key": "side_control_top_A", "label": "Side control (A on top)" },
+    { "key": "side_control_bottom_A", "label": "Side control (A on bottom)" },
+    { "key": "back_control_A_attacker", "label": "Back control (A attacking)" },
+    { "key": "turtle_A", "label": "Turtle (A turtling)" },
+    { "key": "north_south_top_A", "label": "North-south (A on top)" }
+  ],
+  "moves": [
+    { "key": "double_leg_takedown", "label": "Double leg takedown", "category": "takedown", "tags": ["standing", "beginner"] },
+    { "key": "single_leg_takedown", "label": "Single leg takedown", "category": "takedown", "tags": ["standing"] },
+    { "key": "hip_throw", "label": "Hip throw (O-goshi)", "category": "takedown", "tags": ["standing", "judo"] },
+    { "key": "guard_pull", "label": "Guard pull", "category": "guard", "tags": ["standing", "beginner"] },
+    { "key": "scissor_sweep", "label": "Scissor sweep", "category": "sweep", "tags": ["guard", "beginner"] },
+    { "key": "hip_bump_sweep", "label": "Hip bump sweep", "category": "sweep", "tags": ["guard"] },
+    { "key": "flower_sweep", "label": "Flower sweep (pendulum)", "category": "sweep", "tags": ["guard"] },
+    { "key": "armbar_from_guard", "label": "Armbar from guard", "category": "submission", "tags": ["guard", "upper_body"] },
+    { "key": "triangle_from_guard", "label": "Triangle choke from guard", "category": "submission", "tags": ["guard"] },
+    { "key": "omoplata", "label": "Omoplata", "category": "submission", "tags": ["guard", "upper_body"] },
+    { "key": "knee_cut_pass", "label": "Knee cut pass", "category": "pass", "tags": ["passing"] },
+    { "key": "torreando_pass", "label": "Torreando pass", "category": "pass", "tags": ["passing"] },
+    { "key": "x_pass", "label": "X pass", "category": "pass", "tags": ["passing"] },
+    { "key": "half_guard_pass_smash", "label": "Half guard smash pass", "category": "pass", "tags": ["passing", "half_guard"] },
+    { "key": "underhook_recover_guard", "label": "Underhook recover guard", "category": "guard_recovery", "tags": ["bottom"] },
+    { "key": "deep_half_entry", "label": "Deep half guard entry", "category": "guard_recovery", "tags": ["bottom", "half_guard"] },
+    { "key": "turtle_up", "label": "Turtle up", "category": "defense", "tags": ["bottom", "defensive"] },
+    { "key": "kimura_attempt", "label": "Kimura attempt", "category": "submission", "tags": ["upper_body"] },
+    { "key": "americana_attempt", "label": "Americana attempt", "category": "submission", "tags": ["upper_body", "side_control"] },
+    { "key": "armbar_from_mount", "label": "Armbar from mount", "category": "submission", "tags": ["mount", "upper_body"] },
+    { "key": "rear_naked_choke", "label": "Rear naked choke", "category": "submission", "tags": ["back_control"] },
+    { "key": "bow_and_arrow_choke", "label": "Bow and arrow choke", "category": "submission", "tags": ["back_control"] },
+    { "key": "bridge_and_roll_escape", "label": "Bridge and roll (upa)", "category": "escape", "tags": ["mount_escape"] },
+    { "key": "elbow_knee_escape", "label": "Elbow-knee escape", "category": "escape", "tags": ["mount_escape"] },
+    { "key": "side_control_escape_shrimp", "label": "Shrimp escape from side control", "category": "escape", "tags": ["side_control_escape"] },
+    { "key": "north_south_choke", "label": "North-south choke", "category": "submission", "tags": ["north_south"] }
+  ],
+  "transitions": [
+    { "fromPosition": "standing", "move": "double_leg_takedown", "toPosition": "side_control_top_A", "difficulty": 2 },
+    { "fromPosition": "standing", "move": "single_leg_takedown", "toPosition": "side_control_top_A", "difficulty": 2 },
+    { "fromPosition": "standing", "move": "hip_throw", "toPosition": "side_control_top_A", "difficulty": 3 },
+    { "fromPosition": "standing", "move": "guard_pull", "toPosition": "closed_guard_bottom_A", "difficulty": 1 },
+    { "fromPosition": "closed_guard_bottom_A", "move": "scissor_sweep", "toPosition": "mount_top_A", "difficulty": 2 },
+    { "fromPosition": "closed_guard_bottom_A", "move": "hip_bump_sweep", "toPosition": "mount_top_A", "difficulty": 2 },
+    { "fromPosition": "closed_guard_bottom_A", "move": "flower_sweep", "toPosition": "side_control_top_A", "difficulty": 3 },
+    { "fromPosition": "closed_guard_bottom_A", "move": "armbar_from_guard", "toPosition": "closed_guard_bottom_A", "difficulty": 3 },
+    { "fromPosition": "closed_guard_bottom_A", "move": "triangle_from_guard", "toPosition": "closed_guard_bottom_A", "difficulty": 3 },
+    { "fromPosition": "closed_guard_bottom_A", "move": "omoplata", "toPosition": "closed_guard_bottom_A", "difficulty": 4 },
+    { "fromPosition": "mount_top_A", "move": "kimura_attempt", "toPosition": "mount_top_A", "difficulty": 3 },
+    { "fromPosition": "mount_top_A", "move": "armbar_from_mount", "toPosition": "mount_top_A", "difficulty": 3 },
+    { "fromPosition": "mount_top_A", "move": "americana_attempt", "toPosition": "mount_top_A", "difficulty": 2 },
+    { "fromPosition": "mount_bottom_A", "move": "bridge_and_roll_escape", "toPosition": "closed_guard_bottom_A", "difficulty": 2 },
+    { "fromPosition": "mount_bottom_A", "move": "elbow_knee_escape", "toPosition": "half_guard_bottom_A", "difficulty": 3 },
+    { "fromPosition": "side_control_top_A", "move": "kimura_attempt", "toPosition": "side_control_top_A", "difficulty": 3 },
+    { "fromPosition": "side_control_top_A", "move": "americana_attempt", "toPosition": "side_control_top_A", "difficulty": 2 },
+    { "fromPosition": "side_control_top_A", "move": "north_south_choke", "toPosition": "north_south_top_A", "difficulty": 3 },
+    { "fromPosition": "side_control_bottom_A", "move": "side_control_escape_shrimp", "toPosition": "open_guard_bottom_A", "difficulty": 3 },
+    { "fromPosition": "half_guard_bottom_A", "move": "underhook_recover_guard", "toPosition": "closed_guard_bottom_A", "difficulty": 3 },
+    { "fromPosition": "half_guard_bottom_A", "move": "deep_half_entry", "toPosition": "half_guard_bottom_A", "difficulty": 4 },
+    { "fromPosition": "half_guard_bottom_A", "move": "turtle_up", "toPosition": "turtle_A", "difficulty": 2 },
+    { "fromPosition": "half_guard_bottom_A", "move": "half_guard_pass_smash", "toPosition": "side_control_top_A", "difficulty": 3 },
+    { "fromPosition": "back_control_A_attacker", "move": "rear_naked_choke", "toPosition": "back_control_A_attacker", "difficulty": 3 },
+    { "fromPosition": "back_control_A_attacker", "move": "bow_and_arrow_choke", "toPosition": "back_control_A_attacker", "difficulty": 3 }
+  ],
+  "recommendedResponses": [
+    {
+      "whenOpponentPlays": "knee_cut_pass",
+      "fromPosition": "half_guard_bottom_A",
+      "responses": [
+        { "move": "underhook_recover_guard", "score": 9, "reason": "Highest-percentage recovery against knee cut." },
+        { "move": "deep_half_entry", "score": 7, "reason": "Strong counter if underhook is denied." },
+        { "move": "turtle_up", "score": 4, "reason": "Defensive fallback; concedes top position." }
+      ]
+    },
+    {
+      "whenOpponentPlays": "double_leg_takedown",
+      "fromPosition": "standing",
+      "responses": [
+        { "move": "guard_pull", "score": 6, "reason": "Accept guard rather than scramble from a bad position." }
+      ]
+    }
+  ]
+}
