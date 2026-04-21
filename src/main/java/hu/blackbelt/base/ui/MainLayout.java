@@ -18,9 +18,11 @@ import com.vaadin.flow.router.Layout;
 import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.flow.server.menu.MenuConfiguration;
 import com.vaadin.flow.server.menu.MenuEntry;
+import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.ServletException;
 
 @Layout
+@PermitAll
 public final class MainLayout extends AppLayout {
 
     MainLayout() {
