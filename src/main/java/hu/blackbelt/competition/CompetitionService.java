@@ -30,6 +30,11 @@ public class CompetitionService {
         repository.deleteById(id);
     }
 
+    @Transactional
+    public void deleteAll() {
+        repository.deleteAll();
+    }
+
     @Transactional(readOnly = true)
     public long countTotal() {
         return repository.count();

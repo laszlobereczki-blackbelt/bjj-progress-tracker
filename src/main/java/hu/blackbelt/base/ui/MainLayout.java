@@ -8,9 +8,12 @@ import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.avatar.AvatarVariant;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.SvgIcon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.*;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
@@ -18,6 +21,7 @@ import com.vaadin.flow.router.Layout;
 import com.vaadin.flow.server.VaadinServletRequest;
 import com.vaadin.flow.server.menu.MenuConfiguration;
 import com.vaadin.flow.server.menu.MenuEntry;
+import hu.blackbelt.base.DummyDataService;
 import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.ServletException;
 
@@ -25,7 +29,10 @@ import jakarta.servlet.ServletException;
 @PermitAll
 public final class MainLayout extends AppLayout {
 
-    MainLayout() {
+    private final DummyDataService dummyDataService;
+
+    MainLayout(DummyDataService dummyDataService) {
+        this.dummyDataService = dummyDataService;
         setPrimarySection(Section.DRAWER);
         addToDrawer(createApplicationHeader(), createApplicationDrawer(), createApplicationFooter());
     }
@@ -51,13 +58,35 @@ public final class MainLayout extends AppLayout {
     }
 
     private Component createApplicationFooter() {
+        var loadDemoBtn = new Button("Load demo data", e -> confirmLoadDemo());
+        loadDemoBtn.addThemeVariants(ButtonVariant.TERTIARY, ButtonVariant.SMALL);
+
         var signOutBtn = new Button("Sign out", e -> signOut());
         signOutBtn.addThemeVariants(ButtonVariant.TERTIARY, ButtonVariant.SMALL);
 
-        var footer = new VerticalLayout(signOutBtn);
+        var footer = new VerticalLayout(loadDemoBtn, signOutBtn);
         footer.setAlignItems(FlexComponent.Alignment.CENTER);
         footer.addClassName("app-footer");
         return footer;
+    }
+
+    private void confirmLoadDemo() {
+        var dialog = new ConfirmDialog();
+        dialog.setHeader("Load demo data");
+        dialog.setText("This will delete all current data and replace it with demo data. This cannot be undone.");
+        dialog.setCancelable(true);
+        dialog.setConfirmText("Load demo data");
+        dialog.setConfirmButtonTheme("error primary");
+        dialog.addConfirmListener(e -> loadDemo());
+        dialog.open();
+    }
+
+    private void loadDemo() {
+        dummyDataService.resetToDemo();
+        var notification = Notification.show("Demo data loaded successfully");
+        notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        notification.setDuration(3000);
+        UI.getCurrent().navigate("");
     }
 
     private void signOut() {

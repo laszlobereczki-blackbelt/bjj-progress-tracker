@@ -31,6 +31,11 @@ public class TrainingSessionService {
         repository.deleteById(id);
     }
 
+    @Transactional
+    public void deleteAll() {
+        repository.deleteAll();
+    }
+
     @Transactional(readOnly = true)
     public long getTotalMinutes() {
         return repository.sumDurationMinutes();

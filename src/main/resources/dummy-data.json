@@ -1,0 +1,55 @@
+{
+  "trainingSessions": [
+    {"date": "2025-04-28", "durationMinutes": 90, "type": "GI", "location": "Team Blackbelt Academy", "notes": "Worked on spider guard sweeps and transitions to X-guard"},
+    {"date": "2025-05-07", "durationMinutes": 75, "type": "NOGI", "location": "Team Blackbelt Academy", "notes": "Leg lock entries and heel hook defences"},
+    {"date": "2025-05-15", "durationMinutes": 60, "type": "GRAPPLING", "location": "CrossFit Arena Budapest", "notes": "Open mat with visiting grapplers from Austria"},
+    {"date": "2025-06-03", "durationMinutes": 90, "type": "GI", "location": "Team Blackbelt Academy", "notes": "Kimura trap from half guard bottom and top"},
+    {"date": "2025-06-19", "durationMinutes": 90, "type": "GI", "location": "Team Blackbelt Academy", "notes": "Class before belt promotion ceremony – flow rolling only"},
+    {"date": "2025-07-08", "durationMinutes": 75, "type": "NOGI", "location": "Team Blackbelt Academy", "notes": "Wrestling takedowns: double leg and arm drag to back"},
+    {"date": "2025-07-24", "durationMinutes": 60, "type": "GRAPPLING", "location": "Summer Camp, Lake Balaton", "notes": "Outdoor grappling session during annual summer camp"},
+    {"date": "2025-08-12", "durationMinutes": 90, "type": "GI", "location": "Team Blackbelt Academy", "notes": "Back takes and finishing the rear naked choke"},
+    {"date": "2025-09-02", "durationMinutes": 90, "type": "GI", "location": "Team Blackbelt Academy", "notes": "Competition prep – guard retention and recovery drills"},
+    {"date": "2025-09-16", "durationMinutes": 75, "type": "NOGI", "location": "Team Blackbelt Academy", "notes": "Inside heel hooks and kneebar positional awareness"},
+    {"date": "2025-10-05", "durationMinutes": 90, "type": "GI", "location": "Team Blackbelt Academy", "notes": "Post-competition review: pressure passing and top control"},
+    {"date": "2025-11-11", "durationMinutes": 60, "type": "NOGI", "location": "Grappling Lab Vienna", "notes": "Drop-in session while travelling for work"},
+    {"date": "2025-12-09", "durationMinutes": 90, "type": "GI", "location": "Team Blackbelt Academy", "notes": "End-of-year open mat – casual rounds with everyone"},
+    {"date": "2026-01-14", "durationMinutes": 90, "type": "GI", "location": "Team Blackbelt Academy", "notes": "New year, back to basics: mount escapes and bridging"},
+    {"date": "2026-02-20", "durationMinutes": 75, "type": "GRAPPLING", "location": "Team Blackbelt Academy", "notes": "Freestyle rounds with no fixed game plan"},
+    {"date": "2026-03-18", "durationMinutes": 90, "type": "GI", "location": "Team Blackbelt Academy", "notes": "Competition prep: pressure passing and guard break sequences"},
+    {"date": "2026-04-08", "durationMinutes": 90, "type": "NOGI", "location": "Team Blackbelt Academy", "notes": "Submission-only sparring – 5-minute rounds, no points"}
+  ],
+  "beltPromotions": [
+    {
+      "belt": "BLUE",
+      "stripes": 2,
+      "dateAwarded": "2025-06-21",
+      "awardedBy": "Prof. Marco Silva",
+      "academy": "Team Blackbelt Academy",
+      "notes": "Promoted after 14 months at white belt. Both stripes awarded on the same day in recognition of consistent attendance and competition results."
+    }
+  ],
+  "competitions": [
+    {
+      "date": "2025-03-22",
+      "name": "Spring Open BJJ Championship",
+      "location": "Budapest",
+      "division": "BLUE",
+      "weightClass": "-76 kg",
+      "result": "SILVER",
+      "matchesWon": 2,
+      "matchesLost": 1,
+      "notes": "Lost the final by 2 points after two strong wins. Opponent scored a takedown in the last 30 seconds. Great experience overall."
+    },
+    {
+      "date": "2025-09-27",
+      "name": "Autumn Submission Wrestling Cup",
+      "location": "Debrecen",
+      "division": "BLUE",
+      "weightClass": "-76 kg",
+      "result": "GOLD",
+      "matchesWon": 3,
+      "matchesLost": 0,
+      "notes": "Won all three matches by submission: rear naked choke in quarterfinal, RNC again in semifinal, armbar in the final. Best performance so far."
+    }
+  ]
+}
