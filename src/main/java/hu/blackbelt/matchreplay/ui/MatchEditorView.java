@@ -1,11 +1,16 @@
 package hu.blackbelt.matchreplay.ui;
 
+import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.ShortcutRegistration;
+import com.vaadin.flow.component.Shortcuts;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.server.streams.DownloadEvent;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -20,11 +25,13 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import hu.blackbelt.matchreplay.Match;
 import hu.blackbelt.matchreplay.MatchEvent;
+import hu.blackbelt.matchreplay.MatchExportService;
 import hu.blackbelt.matchreplay.MatchService;
 import hu.blackbelt.matchreplay.catalog.MoveCatalogLoader;
 import hu.blackbelt.matchreplay.catalog.MoveCatalogSnapshot;
 import jakarta.annotation.security.PermitAll;
 
+import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
@@ -37,6 +44,7 @@ public class MatchEditorView extends VerticalLayout implements HasUrlParameter<L
 
     private final MatchService service;
     private final MoveCatalogLoader catalogLoader;
+    private final MatchExportService exportService;
     private Match match;
 
     private final Span matchHeader = new Span();
@@ -52,9 +60,14 @@ public class MatchEditorView extends VerticalLayout implements HasUrlParameter<L
     private final IntegerField fatigueAField = new IntegerField();
     private final IntegerField fatigueBField = new IntegerField();
 
-    public MatchEditorView(MatchService service, MoveCatalogLoader catalogLoader) {
+    // Keyboard shortcut support
+    private final List<String> currentTransitionKeys = new ArrayList<>();
+    private final List<ShortcutRegistration> shortcutRegistrations = new ArrayList<>();
+
+    public MatchEditorView(MatchService service, MoveCatalogLoader catalogLoader, MatchExportService exportService) {
         this.service = service;
         this.catalogLoader = catalogLoader;
+        this.exportService = exportService;
         setSizeFull();
         setPadding(true);
         setSpacing(true);
@@ -75,6 +88,10 @@ public class MatchEditorView extends VerticalLayout implements HasUrlParameter<L
     }
 
     private void buildUi() {
+        // Clear any previously registered shortcuts before rebuilding
+        shortcutRegistrations.forEach(ShortcutRegistration::remove);
+        shortcutRegistrations.clear();
+
         removeAll();
 
         var dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
@@ -92,7 +109,26 @@ public class MatchEditorView extends VerticalLayout implements HasUrlParameter<L
         var playBtn = new Button("▶ Playback", e -> UI.getCurrent().navigate(MatchPlaybackView.class, match.getId()));
         playBtn.addThemeVariants(ButtonVariant.SMALL);
 
-        var headerRow = new HorizontalLayout(backBtn, matchHeader, playBtn);
+        var analyzeBtn = new Button("Analyze", e -> UI.getCurrent().navigate(MatchAnalysisView.class, match.getId()));
+        analyzeBtn.addThemeVariants(ButtonVariant.SMALL);
+
+        // Export button — Anchor wraps the button so the browser triggers a file download
+        String exportFilename = "match-" + (match.getId() != null ? match.getId() : "export") + ".json";
+        var exportAnchor = new Anchor((DownloadEvent event) -> {
+            event.setFileName(exportFilename);
+            String json = exportService.export(match);
+            byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
+            try (var out = event.getOutputStream()) {
+                out.write(bytes);
+            }
+        }, "");
+        exportAnchor.setDownload(true);
+        exportAnchor.getElement().getStyle().set("text-decoration", "none");
+        var exportBtn = new Button("Export JSON");
+        exportBtn.addThemeVariants(ButtonVariant.SMALL, ButtonVariant.TERTIARY);
+        exportAnchor.add(exportBtn);
+
+        var headerRow = new HorizontalLayout(backBtn, matchHeader, playBtn, analyzeBtn, exportAnchor);
         headerRow.setWidthFull();
         headerRow.setAlignItems(FlexComponent.Alignment.CENTER);
         headerRow.setFlexGrow(1, matchHeader);
@@ -182,6 +218,11 @@ public class MatchEditorView extends VerticalLayout implements HasUrlParameter<L
         var btnRow = new HorizontalLayout(addBtn, undoBtn);
         btnRow.setAlignItems(FlexComponent.Alignment.BASELINE);
 
+        var shortcutHint = new Span("Shortcuts: 1-9 = quick transitions  ·  U = undo");
+        shortcutHint.getStyle()
+                .set("font-size", "var(--lumo-font-size-xs)")
+                .set("color", "var(--lumo-secondary-text-color)");
+
         var moveBlock = new VerticalLayout(moveCombo, catalogWarning, quickTransitionRow, recentMovesRow);
         moveBlock.setPadding(false);
         moveBlock.setSpacing(false);
@@ -203,12 +244,27 @@ public class MatchEditorView extends VerticalLayout implements HasUrlParameter<L
         row2.setAlignItems(FlexComponent.Alignment.BASELINE);
         row2.getStyle().set("flex-wrap", "wrap");
 
-        inputBar.add(row1, row2);
+        inputBar.add(row1, row2, shortcutHint);
 
         refreshTimeline();
 
         add(headerRow, timeline, inputBar);
         setFlexGrow(1, timeline);
+
+        // Register keyboard shortcuts (only fire when no input field is focused)
+        Key[] digitKeys = {
+            Key.DIGIT_1, Key.DIGIT_2, Key.DIGIT_3, Key.DIGIT_4, Key.DIGIT_5,
+            Key.DIGIT_6, Key.DIGIT_7, Key.DIGIT_8, Key.DIGIT_9
+        };
+        for (int i = 0; i < digitKeys.length; i++) {
+            final int idx = i;
+            shortcutRegistrations.add(
+                Shortcuts.addShortcutListener(this, () -> selectQuickTransition(idx), digitKeys[i])
+            );
+        }
+        shortcutRegistrations.add(
+            Shortcuts.addShortcutListener(this, this::undoLast, Key.KEY_U)
+        );
     }
 
     private void refreshTimeline() {
@@ -232,6 +288,7 @@ public class MatchEditorView extends VerticalLayout implements HasUrlParameter<L
     }
 
     private void refreshQuickTransitions() {
+        currentTransitionKeys.clear();
         quickTransitionRow.removeAll();
         String currentPos = getCurrentPosition();
         if (currentPos == null || currentPos.isBlank()) return;
@@ -246,10 +303,14 @@ public class MatchEditorView extends VerticalLayout implements HasUrlParameter<L
                 .set("align-self", "center");
         quickTransitionRow.add(label);
 
+        int chipNum = 0;
         for (var t : catalog.transitionsFrom(currentPos)) {
             String moveKey = t.move();
+            currentTransitionKeys.add(moveKey);
+            chipNum++;
             String moveLabel = catalog.findMove(moveKey).map(m -> m.label()).orElse(moveKey);
-            var chip = new Button(moveLabel, e -> {
+            String chipLabel = chipNum <= 9 ? chipNum + ". " + moveLabel : moveLabel;
+            var chip = new Button(chipLabel, e -> {
                 moveCombo.setValue(moveKey);
                 if (positionAfterField.isEmpty()) positionAfterField.setValue(t.toPosition());
                 updateCatalogWarning();
@@ -289,6 +350,21 @@ public class MatchEditorView extends VerticalLayout implements HasUrlParameter<L
             chip.addThemeVariants(ButtonVariant.SMALL, ButtonVariant.TERTIARY);
             chip.getStyle().set("font-size", "var(--lumo-font-size-xs)");
             recentMovesRow.add(chip);
+        }
+    }
+
+    private void selectQuickTransition(int idx) {
+        if (idx >= currentTransitionKeys.size()) return;
+        String moveKey = currentTransitionKeys.get(idx);
+        MoveCatalogSnapshot catalog = catalogLoader.getSnapshot();
+        moveCombo.setValue(moveKey);
+        updateCatalogWarning();
+        String currentPos = getCurrentPosition();
+        if (currentPos != null && positionAfterField.isEmpty()) {
+            catalog.transitionsFrom(currentPos).stream()
+                    .filter(t -> t.move().equals(moveKey))
+                    .findFirst()
+                    .ifPresent(t -> positionAfterField.setValue(t.toPosition()));
         }
     }
 

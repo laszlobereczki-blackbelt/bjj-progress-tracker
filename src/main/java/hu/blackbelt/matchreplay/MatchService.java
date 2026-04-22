@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MatchService {
@@ -49,6 +50,11 @@ public class MatchService {
         event.setNote(note == null || note.isBlank() ? null : note);
         match.addEvent(event);
         return repository.save(match);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Match> listAllWithEvents() {
+        return repository.findAllWithEvents();
     }
 
     @Transactional

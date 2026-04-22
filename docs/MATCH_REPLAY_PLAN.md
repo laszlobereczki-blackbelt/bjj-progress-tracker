@@ -42,7 +42,7 @@ Key components:
 
 **Implemented 2026-04-21.** Package `hu.blackbelt.matchreplay.catalog`. `MoveCatalogLoader` (`@Service`) reads `config/moves.json` on startup (copies bundled `moves-default.json` on first run), watches the directory via `WatchService` for live reloads, and exposes an `AtomicReference<MoveCatalogSnapshot>`. Record types: `CatalogPosition`, `CatalogMove`, `CatalogTransition`, `CatalogResponseEntry`, `CatalogRecommendedResponse`, `MoveCatalogSnapshot` (with `search()`, `transitionsFrom()`, `findMove()` helpers). Editor `MatchEditorView` upgraded: move `TextField` replaced with a `ComboBox<String>` with server-side label+tag+key filtering and `allowCustomValue=true`; "Quick:" chips show legal transitions from the current position with auto-fill of positionAfter; "Recent:" chips surface last 5 distinct moves; advisory warning shown for out-of-catalog keys. Timeline cards now display human-readable move labels and position labels from the catalog.
 
-### Phase 4 — Pattern Detection and Frequencies
+### Phase 4 — Pattern Detection and Frequencies ✅ DONE
 **Goal:** Compute per-match statistics and detect recurring sequences.
 
 Key components:
@@ -50,20 +50,26 @@ Key components:
 - Outputs: move frequencies per player, top N-grams (n=2,3) per player, fatigue-over-time series, time-in-position totals.
 - `MatchAnalysisView` with charts (Vaadin Chart or simple CSS bars — decide during implementation).
 
-### Phase 5 — Recommendations and Mistake Flagging
+**Implemented 2026-04-21.** Package `hu.blackbelt.matchreplay.analysis`. Records: `MoveFrequency`, `PatternOccurrence`, `FatiguePoint`, `PositionTime`, `MatchAnalysis`. `MatchAnalyzer` (`@Service`) is pure (no JPA/UI dependencies) and computes move frequencies per actor, n=2 and n=3 move N-grams (patterns with ≥2 occurrences), fatigue-over-time series, and time-in-position step counts. `MatchAnalysisView` at route `match-lab/analysis` shows three `TabSheet` panels: **Frequencies** (CSS horizontal bars for top moves per player + time-in-position block), **Patterns** (N-gram cards grouped by actor), **Fatigue** (per-step table with inline fill-bar indicators for both players). "Analyze" button added to `MatchReplayListView` grid and `MatchEditorView` header.
+
+### Phase 5 — Recommendations and Mistake Flagging ✅ DONE
 **Goal:** Compare user actions to catalog recommendations and surface actionable feedback.
 
 Key components:
 - `RecommendationEngine`: for each of the user's moves, looks up `recommendedResponses` for the opponent's preceding move in the JSON catalog. Flags "mistake" when the user's choice has a lower `score` than the top recommendation above a configurable gap.
 - Feedback panel in the analysis view: mistake list with the recommended alternative and a short reason string pulled from JSON.
 
-### Phase 6 — UI/UX Polish and Cross-Match Insights
+**Implemented 2026-04-22.** Package `hu.blackbelt.matchreplay.analysis`. `MistakeSeverity` enum (HIGH/MEDIUM/LOW). `MistakeFinding` record captures stepIndex, user/opponent move keys+labels, position, chosenScore, top recommendation (key, label, score, reason), scoreGap, and severity. `RecommendationEngine` (`@Service`) iterates events where actor==selfRole and the preceding event was the opponent's; looks up `recommendedResponses` by (opponentMoveKey, fromPositionKey); computes score gap (0 if user move absent from response list); severity: HIGH (gap≥5), MEDIUM (3–4), LOW (1–2). `MatchAnalysisView` extended: injects `RecommendationEngine`, computes findings alongside `MatchAnalysis`, adds a fourth **Feedback** tab showing: guidance when selfRole is unset; a list of HIGH/MEDIUM mistake cards (color-coded border) each with step number, severity badge, situation description, top recommendation, and catalog reason; LOW deviations collapsed behind a toggle button.
+
+### Phase 6 — UI/UX Polish and Cross-Match Insights ✅ DONE
 **Goal:** Improve ergonomics and aggregate insights across matches.
 
 Key components:
 - Keyboard shortcuts in the editor (number keys for quick transitions, `U` to undo last event).
 - "Across matches" aggregates: most frequent mistakes, move preferences by opponent, fatigue curves averaged.
 - Export a match to a shareable JSON file (same schema as the internal model, minus DB IDs).
+
+**Implemented 2026-04-22.** Keyboard shortcuts in `MatchEditorView`: keys `1`–`9` select the numbered quick-transition chips (chips now display their shortcut number); `U` undoes the last event; a "Shortcuts:" hint line is shown in the input bar. Shortcut registrations are cleared and re-registered each time `buildUi()` is called to avoid duplicates on re-navigation. Export: `MatchExportService` serialises a `Match` to pretty-printed JSON (exportVersion, exportedAt, all match fields minus DB ID, full events array); an **Export JSON** anchor-button using Vaadin 25 `DownloadHandler` API is added to the editor header, triggering a direct browser file download. Cross-match insights: `MatchRepository.findAllWithEvents()` and `MatchService.listAllWithEvents()` added; new records `AggregatedMistake`, `OpponentMoveStats`, `AveragedFatiguePoint`, `CrossMatchAnalysis`; `CrossMatchAnalyzer` (`@Service`) aggregates `MistakeFinding`s across all matches (top 10 by frequency), user move preferences per opponent (top 5 moves per opponent), and average fatigue across 5 equal match-percentage buckets. `MatchReplayListView` converted to a `TabSheet` with **Matches** (existing grid + New Match button) and **Insights** (top mistakes with severity colours, move-preference bar charts grouped by opponent, average fatigue table) tabs.
 
 ---
 
